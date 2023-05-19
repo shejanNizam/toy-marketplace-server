@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 7000;
@@ -25,7 +25,32 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    //   all operations coming soon
+    //   all operations coming soon start
+    const toyCollection = client.db("toyMarketplaceDB").collection("allToys");
+
+    // read operation ( GET method )
+    app.get("/toys", async (req, res) => {
+      const result = await toyCollection.find().toArray();
+      res.send(result);
+    });
+
+    // Read Operation { find single documents }
+    app.get("/toys/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await toyCollection.findOne(query);
+      res.send(result);
+    });
+
+    // create document from users ( POST method )
+    app.post("/post_toys", async (req, res) => {
+      const body = req.body;
+      const result = await toyCollection.insertOne(body);
+      res.send(result);
+      console.log(result);
+    });
+
+    //   all operations coming soon end
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
