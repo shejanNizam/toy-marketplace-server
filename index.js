@@ -61,8 +61,18 @@ async function run() {
     });
 
     // Update Operation { find single documents using id }
-    app.put("/my_toys/:id", async (req, res) => {
+    app.patch("/my_toys/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
       const updatedToys = req.body;
+      console.log(updatedToys);
+      const updateDoc = {
+        $set: {
+          status: updatedToys.status,
+        },
+      };
+      const result = await toysCollection.updateOne(filter, updateDoc);
+      res.send(result);
     });
 
     // Delete Operation { find single documents using id }
