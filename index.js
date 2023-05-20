@@ -26,11 +26,11 @@ async function run() {
     await client.connect();
 
     //   all operations coming soon start
-    const toyCollection = client.db("toyMarketplaceDB").collection("allToys");
+    const toysCollection = client.db("toyMarketplaceDB").collection("allToys");
 
     // read operation ( GET method )
     app.get("/toys", async (req, res) => {
-      const result = await toyCollection.find().toArray();
+      const result = await toysCollection.find().toArray();
       res.send(result);
     });
 
@@ -38,16 +38,39 @@ async function run() {
     app.get("/toys/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
-      const result = await toyCollection.findOne(query);
+      const result = await toysCollection.findOne(query);
+      res.send(result);
+    });
+
+    // Read Operation { find some documents using query }
+    app.get("/my_toys", async (req, res) => {
+      let query = {};
+      if (req.query?.email) {
+        query = { email: req.query?.email };
+      }
+      const result = await toysCollection.find(query).toArray();
       res.send(result);
     });
 
     // create document from users ( POST method )
     app.post("/post_toys", async (req, res) => {
       const body = req.body;
-      const result = await toyCollection.insertOne(body);
+      const result = await toysCollection.insertOne(body);
       res.send(result);
       console.log(result);
+    });
+
+    // Update Operation { find single documents using id }
+    app.put("/my_toys/:id", async (req, res) => {
+      const updatedToys = req.body;
+    });
+
+    // Delete Operation { find single documents using id }
+    app.delete("/my_toys/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await toysCollection.deleteOne(query);
+      res.send(result);
     });
 
     //   all operations coming soon end
