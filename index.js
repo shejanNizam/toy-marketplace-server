@@ -34,7 +34,7 @@ async function run() {
       res.send(result);
     });
 
-    // Read Operation { find single documents }
+    // Read Operation { find single documents and also find for update }
     app.get("/toys/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -61,17 +61,30 @@ async function run() {
     });
 
     // Update Operation { find single documents using id }
-    app.patch("/my_toys/:id", async (req, res) => {
+    app.patch("/toys/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
-      const updatedToys = req.body;
-      console.log(updatedToys);
-      const updateDoc = {
+      const options = { upsert: true };
+      const toy = req.body;
+      console.log(toy);
+      const updatedToy = {
         $set: {
-          status: updatedToys.status,
+          seller_name: toy.seller_name,
+          email: toy.email,
+          toy_name: toy.toy_name,
+          photo_url: toy.photo_url,
+          category: toy.category,
+          price: toy.price,
+          rating: toy.rating,
+          quantity: toy.quantity,
+          details: toy.details,
         },
       };
-      const result = await toysCollection.updateOne(filter, updateDoc);
+      const result = await toysCollection.updateOne(
+        filter,
+        updatedToy,
+        options
+      );
       res.send(result);
     });
 
