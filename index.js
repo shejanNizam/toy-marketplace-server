@@ -25,12 +25,15 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    //   all operations coming soon start
+    //   all operations start
     const toysCollection = client.db("toyMarketplaceDB").collection("allToys");
 
     // read operation ( GET method )
     app.get("/toys", async (req, res) => {
-      const result = await toysCollection.find().toArray();
+      const result = await toysCollection
+        .find()
+        .sort({ createdAt: -1 })
+        .toArray();
       res.send(result);
     });
 
@@ -48,13 +51,17 @@ async function run() {
       if (req.query?.email) {
         query = { email: req.query?.email };
       }
-      const result = await toysCollection.find(query).toArray();
+      const result = await toysCollection
+        .find(query)
+        .sort({ createdAt: -1 })
+        .toArray();
       res.send(result);
     });
 
     // create document from users ( POST method )
     app.post("/post_toys", async (req, res) => {
       const body = req.body;
+      body.createdAt = new Date();
       const result = await toysCollection.insertOne(body);
       res.send(result);
       console.log(result);
@@ -96,7 +103,7 @@ async function run() {
       res.send(result);
     });
 
-    //   all operations coming soon end
+    //   all operations end
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
@@ -108,7 +115,7 @@ async function run() {
     // await client.close();
   }
 }
-run().catch(console.dir);
+run().catch(console.log);
 
 app.get("/", (req, res) => {
   res.send("TOY MARKETPLACE SERVER is running");
